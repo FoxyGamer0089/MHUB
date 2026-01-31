@@ -62,10 +62,16 @@ function setupEventListeners() {
 }
 
 // --- PUBLISH LOGIC ---
+// --- PUBLISH LOGIC ---
 window.generatePublishCode = () => {
     const packs = Storage.getPacks();
-    const json = JSON.stringify(packs, null, 4);
-    const code = `const GLOBAL_PACKS = ${json};`;
+    const tokens = Storage.getTokens();
+    const packsJson = JSON.stringify(packs, null, 4);
+    const tokensJson = JSON.stringify(tokens, null, 4);
+
+    const code = `const GLOBAL_PACKS = ${packsJson};
+
+const GLOBAL_TOKENS = ${tokensJson};`;
 
     // Copy to clipboard
     navigator.clipboard.writeText(code).then(() => {
