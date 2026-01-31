@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restricted Access - MR DADDY HUB</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .access-box {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        input {
+            text-align: center;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="access-box">
+        <div class="logo" style="margin-bottom: 20px;">MR DADDY HUB</div>
+        <h2>Enter Access Token</h2>
+        <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 20px;">This website is invite-only.</p>
+
+        <input type="text" id="token-input" placeholder="TOKEN-CODE">
+        <button id="enter-btn" class="btn btn-block">ENTER HUB</button>
+        <p id="error-msg" style="color: red; margin-top: 15px; display: none;">Invalid Token</p>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script>
+        document.getElementById('enter-btn').onclick = validate;
+        document.getElementById('token-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') validate();
+        });
+
+        function validate() {
+            const token = document.getElementById('token-input').value.trim();
+            if (Storage.validateToken(token)) {
+                Storage.setUserToken(token);
+                window.location.href = 'index.html';
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>

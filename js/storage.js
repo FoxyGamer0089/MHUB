@@ -9,10 +9,46 @@
 const STORAGE_KEYS = {
     PACKS: 'mrd_packs',
     ORDERS: 'mrd_orders',
-    ADMIN_SESSION: 'mrd_admin_session'
+    ADMIN_SESSION: 'mrd_admin_session',
+    TOKENS: 'mrd_tokens',
+    USER_TOKEN: 'mrd_user_token' // Stores the token entered by the user
 };
 
 const Storage = {
+    // --- TOKENS (Access Control) ---
+    getTokens: () => {
+        const tokens = localStorage.getItem(STORAGE_KEYS.TOKENS);
+        return tokens ? JSON.parse(tokens) : [];
+    },
+
+    saveToken: (tokenString) => {
+        const tokens = Storage.getTokens();
+        if (!tokens.includes(tokenString)) {
+            tokens.push(tokenString);
+            localStorage.setItem(STORAGE_KEYS.TOKENS, JSON.stringify(tokens));
+        }
+    },
+
+    deleteToken: (tokenString) => {
+        let tokens = Storage.getTokens();
+        tokens = tokens.filter(t => t !== tokenString);
+        localStorage.setItem(STORAGE_KEYS.TOKENS, JSON.stringify(tokens));
+    },
+
+    validateToken: (tokenString) => {
+        const tokens = Storage.getTokens();
+        return tokens.includes(tokenString);
+    },
+
+    // User Session
+    setUserToken: (tokenString) => {
+        localStorage.setItem(STORAGE_KEYS.USER_TOKEN, tokenString);
+    },
+
+    getUserToken: () => {
+        return localStorage.getItem(STORAGE_KEYS.USER_TOKEN);
+    },
+
     // --- PACKS ---
     getPacks: () => {
         const packs = localStorage.getItem(STORAGE_KEYS.PACKS);
@@ -30,13 +66,13 @@ const Storage = {
     savePack: (pack) => {
         const packs = Storage.getPacks();
         const existingIndex = packs.findIndex(p => p.id === pack.id);
-        
+
         if (existingIndex >= 0) {
             packs[existingIndex] = pack;
         } else {
             packs.push(pack);
         }
-        
+
         localStorage.setItem(STORAGE_KEYS.PACKS, JSON.stringify(packs));
     },
 
@@ -62,7 +98,7 @@ const Storage = {
     generateId: () => {
         return 'pack_' + Date.now() + Math.random().toString(36).substr(2, 9);
     },
-    
+
     formatCurrency: (amount) => {
         return new Intl.NumberFormat('en-IN', {
             style: 'currency',

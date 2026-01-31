@@ -66,15 +66,54 @@ window.switchTab = (tabName) => {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelector(`#tab-packs`).style.display = 'none';
     document.querySelector(`#tab-orders`).style.display = 'none';
+    document.querySelector(`#tab-tokens`).style.display = 'none';
 
     if (tabName === 'packs') {
         document.querySelector(`#tab-packs`).style.display = 'block';
         document.querySelector(`.tab-btn:nth-child(1)`).classList.add('active');
         loadPacks();
-    } else {
+    } else if (tabName === 'orders') {
         document.querySelector(`#tab-orders`).style.display = 'block';
         document.querySelector(`.tab-btn:nth-child(2)`).classList.add('active');
         loadOrders();
+    } else {
+        document.querySelector(`#tab-tokens`).style.display = 'block';
+        document.querySelector(`.tab-btn:nth-child(3)`).classList.add('active');
+        loadTokens();
+    }
+};
+
+// --- TOKENS LOGIC ---
+function loadTokens() {
+    const tokens = Storage.getTokens();
+    const tbody = document.querySelector('#tokens-table tbody');
+
+    if (tokens.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">No active tokens. Generate one above.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = tokens.map(token => `
+        <tr>
+            <td style="font-family:monospace; font-size:1.1rem; color:var(--accent-color); font-weight:bold;">${token}</td>
+            <td>
+                <button class="action-btn" style="background:#cc0000" onclick="deleteToken('${token}')">Revoke</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.generateToken = () => {
+    const token = 'RD-' + Math.random().toString(36).substr(2, 6).toUpperCase() + Math.random().toString(36).substr(2, 2).toUpperCase();
+    Storage.saveToken(token);
+    loadTokens();
+    alert(`Token Generated: ${token}\nCopy and send this to the user.`);
+};
+
+window.deleteToken = (token) => {
+    if (confirm("Revoke this token? User will lose access.")) {
+        Storage.deleteToken(token);
+        loadTokens();
     }
 };
 

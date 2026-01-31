@@ -130,6 +130,7 @@
             <div class="admin-controls">
                 <button class="tab-btn active" onclick="switchTab('packs')">Manage Packs</button>
                 <button class="tab-btn" onclick="switchTab('orders')">View Orders</button>
+                <button class="tab-btn" onclick="switchTab('tokens')">Access Tokens</button>
             </div>
 
             <!-- PACKS TAB -->
@@ -192,6 +193,32 @@
                                 <th>Amount</th>
                                 <th>GC Code / ID</th>
                                 <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loaded via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TOKENS TAB (New) -->
+            <div id="tab-tokens" style="display: none;">
+                <div class="card mb-4 flex justify-between items-center">
+                    <div>
+                        <h3>Generate Access Token</h3>
+                        <p class="text-muted">Create a unique key for a user to access the site.</p>
+                    </div>
+                    <button class="btn" onclick="generateToken()">+ Generate New Token</button>
+                </div>
+
+                <h3>Active Tokens</h3>
+                <div class="table-container">
+                    <table id="tokens-table">
+                        <thead>
+                            <tr>
+                                <th>Token Code</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
