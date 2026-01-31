@@ -27,6 +27,8 @@ body {
     font-family: var(--font-main);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+    /* Base size */
 }
 
 a {
@@ -34,13 +36,14 @@ a {
     color: inherit;
 }
 
-/* Layout */
+/* --- Layout Wrappers --- */
 .container {
-    max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
     padding: 20px;
 }
 
+/* --- Header --- */
 header {
     display: flex;
     justify-content: space-between;
@@ -58,16 +61,35 @@ header {
     text-transform: uppercase;
 }
 
-/* Typography */
-h1, h2, h3 {
+/* --- Typography --- */
+h1,
+h2,
+h3 {
     margin-bottom: 1rem;
     font-weight: 700;
 }
 
-.text-center { text-align: center; }
-.text-muted { color: var(--text-muted); }
+h1 {
+    font-size: 2.2rem;
+}
 
-/* Buttons */
+h2 {
+    font-size: 1.8rem;
+}
+
+h3 {
+    font-size: 1.4rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: var(--text-muted);
+}
+
+/* --- Buttons --- */
 .btn {
     display: inline-block;
     padding: 12px 24px;
@@ -104,13 +126,15 @@ h1, h2, h3 {
     text-align: center;
 }
 
-/* Cards */
+/* --- Grid System --- */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 30px;
+    /* Default: Responsive filling */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
+/* --- Cards --- */
 .card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -121,13 +145,8 @@ h1, h2, h3 {
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     border-color: var(--accent-color);
-}
-
-.card h3 {
-    margin-top: 0;
-    font-size: 1.25rem;
 }
 
 .price {
@@ -143,7 +162,7 @@ h1, h2, h3 {
     margin-bottom: 20px;
 }
 
-/* Forms */
+/* --- Forms --- */
 .form-group {
     margin-bottom: 20px;
 }
@@ -155,7 +174,9 @@ label {
     font-size: 0.9rem;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
     width: 100%;
     padding: 12px;
     background-color: #222;
@@ -166,31 +187,134 @@ input, textarea, select {
     font-size: 1rem;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
     outline: none;
     border-color: var(--accent-color);
 }
 
-/* Utilities */
-.hidden { display: none !important; }
-.mt-4 { margin-top: 2rem; }
-.mb-4 { margin-bottom: 2rem; }
-.flex { display: flex; gap: 10px; }
-.justify-between { justify-content: space-between; }
-.items-center { align-items: center; }
-
-/* Status Badges */
-.badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
+/* --- Utilities --- */
+.hidden {
+    display: none !important;
 }
-.badge-active { background-color: rgba(0, 255, 136, 0.1); color: #00ff88; }
-.badge-inactive { background-color: rgba(255, 255, 255, 0.1); color: #aaa; }
 
-/* Mobile */
-@media (max-width: 600px) {
-    .container { padding: 15px; }
-    .grid { grid-template-columns: 1fr; }
+.mt-4 {
+    margin-top: 2rem;
+}
+
+.mb-4 {
+    margin-bottom: 2rem;
+}
+
+.flex {
+    display: flex;
+    gap: 10px;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.items-center {
+    align-items: center;
+}
+
+/* --- RESPONSIVE BREAKPOINTS --- */
+
+/* 1. Mobile Devices (Portrait phones, less than 768px) */
+@media (max-width: 767px) {
+    .container {
+        padding: 15px;
+        max-width: 100%;
+    }
+
+    /* Typo adjustments */
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Layout Unstacking */
+    header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    /* Grid becomes single column */
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    /* Flex helpers stack on mobile */
+    .flex {
+        flex-direction: column;
+    }
+
+    /* Admin specific fixes */
+    .admin-controls {
+        flex-wrap: wrap;
+        /* Tabs wrap */
+        justify-content: center;
+    }
+
+    .tab-btn {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+        flex: 1 0 40%;
+        /* 2 per row */
+        text-align: center;
+    }
+
+    /* Ensure touch targets are big enough */
+    .btn,
+    input,
+    select {
+        padding: 14px;
+        /* Larger touch area */
+    }
+
+    /* Hide specific non-critical columns if needed, 
+       but we use overflow-x scroll for tables instead */
+}
+
+/* 2. Tablets (Portrait tablets and large phones, 768px and up) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .container {
+        padding: 30px;
+        max-width: 90%;
+    }
+
+    .grid {
+        /* Usually 2 columns due to minmax(280), but forcing gap tweak */
+        gap: 25px;
+    }
+
+    header {
+        margin-bottom: 30px;
+    }
+}
+
+/* 3. Laptops and Desktops (1024px and up) */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1200px;
+        /* Centered compact view */
+        padding: 40px;
+    }
+
+    .grid {
+        gap: 40px;
+        /* Breathable spacing */
+    }
+
+    /* Refine font sizes for large screens */
+    h1 {
+        font-size: 2.5rem;
+    }
 }
