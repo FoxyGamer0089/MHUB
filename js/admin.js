@@ -174,8 +174,10 @@ function loadOrders() {
                 <td style="font-family:monospace; font-size:0.8rem;">${order.orderId}</td>
                 <td>${escapeHtml(packName)}</td>
                 <td>${Storage.formatCurrency(order.amount)}</td>
-                <td style="font-family:monospace; font-size:0.8rem;">${order.razorpay_payment_id}</td>
-                <td>${new Date(order.purchasedAt).toLocaleDateString()} ${new Date(order.purchasedAt).toLocaleTimeString()}</td>
+                <td style="font-family:monospace; font-size:0.9rem; color: #00ff88; font-weight:bold;">
+                    ${order.payment_method === 'AMAZON_GC' ? escapeHtml(order.gift_card_code) : (order.razorpay_payment_id || 'N/A')}
+                </td>
+                <td>${new Date(order.purchasedAt).toLocaleDateString()}</td>
             </tr>
         `;
     }).join('');

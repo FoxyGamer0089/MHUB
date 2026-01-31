@@ -8,37 +8,53 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- No external scripts needed -->
 </head>
 
 <body>
     <div class="container">
         <header>
-            <div class="logo">MR DADDY CHECKOUT</div>
+            <div class="logo">SECURE CHECKOUT</div>
         </header>
 
         <main id="checkout-section" style="max-width: 500px; margin: 40px auto; display: none;">
             <div class="card text-center">
-                <h2>Order Summary</h2>
+                <h2>Complete Your Purchase</h2>
                 <div class="description" style="margin: 20px 0;">
                     <p id="item-name" style="font-size: 1.2rem; font-weight: bold; color: white;">Loading...</p>
-                    <p>Digital Access Pack</p>
+                    <p class="text-muted">Anonymous Access Pack</p>
                 </div>
 
                 <hr style="border-color: #333; margin: 20px 0;">
 
                 <div class="flex justify-between items-center" style="font-size: 1.2rem; margin-bottom: 30px;">
-                    <span>Total To Pay:</span>
+                    <span>Total Amount:</span>
                     <span id="total-amount" style="color: var(--accent-color); font-weight: bold;"></span>
                 </div>
 
-                <div class="alert"
-                    style="background: #222; padding: 15px; font-size: 0.9rem; color: #aaa; margin-bottom: 20px; border-radius: 4px;">
-                    Secure Payment via Razorpay. No personal data stored.
+                <!-- Step 1 -->
+                <div
+                    style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: left;">
+                    <p style="margin-bottom: 10px; color: #aaa; font-size: 0.9rem;">STEP 1</p>
+                    <p style="margin-bottom: 10px;">Buy an Amazon Pay Gift Card for the total amount.</p>
+                    <button id="buy-gc-btn" class="btn btn-secondary btn-block"
+                        style="border-color: var(--accent-color); color: var(--accent-color);">
+                        Buy Gift Card (Opens Amazon)
+                    </button>
                 </div>
 
-                <button id="rzp-button" class="btn btn-block" style="padding: 15px; font-size: 1.1rem;">PROCEED TO
+                <!-- Step 2 -->
+                <div
+                    style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: left;">
+                    <p style="margin-bottom: 10px; color: #aaa; font-size: 0.9rem;">STEP 2</p>
+                    <p style="margin-bottom: 10px;">Paste the Gift Card Code below:</p>
+                    <input type="text" id="gc-code" placeholder="Example: A1B2-C3D4-E5F6"
+                        style="text-align: center; letter-spacing: 2px; font-weight: bold;">
+                </div>
+
+                <button id="submit-payment-btn" class="btn btn-block" style="padding: 15px; font-size: 1.1rem;">SUBMIT
                     PAYMENT</button>
+
                 <div style="margin-top: 15px;">
                     <a href="index.html" class="text-muted" style="font-size: 0.9rem;">Cancel</a>
                 </div>
@@ -48,19 +64,16 @@
         <main id="success-section" style="max-width: 600px; margin: 50px auto; display: none; text-align: center;">
             <div class="card" style="border-color: #00ff88; box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);">
                 <div style="font-size: 4rem; color: #00ff88; margin-bottom: 20px;">✓</div>
-                <h1 style="color: #00ff88;">Payment Successful</h1>
-                <p>Thank you for your anonymous purchase.</p>
+                <h1 style="color: #00ff88;">Submission Received</h1>
+                <p>We are verifying your Gift Card code.</p>
 
                 <div style="background: #111; padding: 20px; margin: 30px 0; border-radius: 8px; text-align: left;">
                     <p style="margin-bottom: 10px;"><strong style="color:#aaa">Order ID:</strong> <span
                             id="success-order-id" style="font-family: monospace; color: white;"></span></p>
-                    <p style="margin-bottom: 10px;"><strong style="color:#aaa">Amount:</strong> <span
-                            id="success-amount" style="color: white;"></span></p>
-                    <p><strong style="color:#aaa">Status:</strong> <span style="color: #00ff88;">CONFIRMED</span></p>
+                    <p style="margin-bottom: 10px;"><strong style="color:#aaa">Status:</strong> <span
+                            style="color: #00ff88;">PROCESSING</span></p>
+                    <p style="font-size: 0.9rem; color: #aaa;">Please allow some time for admin verification.</p>
                 </div>
-
-                <p class="text-muted" style="font-size: 0.9rem;">Please take a screenshot of this page for your records.
-                </p>
 
                 <a href="index.html" class="btn mt-4">Return Home</a>
             </div>

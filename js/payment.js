@@ -1,10 +1,9 @@
 /**
  * payment.js
- * Razorpay Integration Logic
+ * Gift Card Integration Logic
  */
 
-// ⚠️ IMPORTANT: REPLACE THIS WITH YOUR REAL RAZORPAY KEY ID
-const RAZORPAY_KEY_ID = "rzp_test_S8X93NUrtx5Pm3";
+const AMAZON_GIFT_LINK = "https://amzn.in/d/4sKIc1Q";
 
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -22,80 +21,42 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('item-name').textContent = pack.name;
     document.getElementById('total-amount').textContent = Storage.formatCurrency(pack.price);
 
-    // Initialize Razorpay
-    document.getElementById('rzp-button').onclick = function (e) {
-        e.preventDefault();
-        startPayment(pack);
+    // Step 1: Buy Button
+    document.getElementById('buy-gc-btn').onclick = () => {
+        // Open small popup
+        window.open(AMAZON_GIFT_LINK, 'AmazonGiftCard', 'width=500,height=700,status=yes,scrollbars=yes');
+    };
+
+    // Step 2: Submit Button
+    document.getElementById('submit-payment-btn').onclick = () => {
+        const code = document.getElementById('gc-code').value.trim();
+        validateAndSubmit(pack, code);
     };
 });
 
-function startPayment(pack) {
-    if (RAZORPAY_KEY_ID === "rzp_test_YOUR_KEY_HERE") {
-        alert("SETUP REQUIRED: Please open js/payment.js and add your Razorpay Key ID.");
-        // For testing purposes so the user can see the flow even without a key, 
-        // I'll allow it to fail gracefully or mock it ONLY IF the user expressly asked for NO MOCK.
-        // The user said: "NO simulated payment" and "Use LIVE Razorpay". 
-        // So I must rely on the script. If Key is invalid, Razorpay script will show an error, which is correct behavior.
+function validateAndSubmit(pack, code) {
+    if (!code || code.length < 5) { // Simple length check
+        alert("Please paste a valid Gift Card Code.");
+        return;
     }
 
-    const options = {
-        "key": RAZORPAY_KEY_ID,
-        "amount": pack.price * 100, // Amount in paise
-        "currency": "INR",
-        "name": "MR DADDY HUB",
-        "description": pack.name,
-        "image": "", // Optional logo
-        "handler": function (response) {
-            // SUCCESS HANDLER
-            handleSuccess(pack, response);
-        },
-        "prefill": {
-            "name": "Anonymous Guest", // Default anonymous name
-            "email": "guest@mrdaddy.hub",
-            "contact": ""
-        },
-        "notes": {
-            "pack_id": pack.id
-        },
-        "theme": {
-            "color": "#ff0055"
-        },
-        "modal": {
-            "ondismiss": function () {
-                console.log('Checkout form closed');
-            }
-        }
-    };
-
-    const rzp1 = new Razorpay(options);
-
-    rzp1.on('payment.failed', function (response) {
-        alert("Payment Failed: " + response.error.description);
-    });
-
-    rzp1.open();
-}
-
-function handleSuccess(pack, response) {
     const orderId = 'ORD-' + Date.now();
 
+    // Save Order with GC Code
     const order = {
         orderId: orderId,
         packId: pack.id,
         amount: pack.price,
-        razorpay_payment_id: response.razorpay_payment_id,
-        razorpay_order_id: response.razorpay_order_id || 'N/A', // might be empty in standard checkout if not pre-created
-        status: "success",
+        payment_method: 'AMAZON_GC',
+        gift_card_code: code, // Saved for Admin
+        status: "processing", // Admin must manually verify
         purchasedAt: Date.now()
     };
 
-    // Save to LocalStorage
     Storage.saveOrder(order);
 
     // Show Success UI
     document.getElementById('checkout-section').style.display = 'none';
     document.getElementById('success-section').style.display = 'block';
-
     document.getElementById('success-order-id').textContent = orderId;
-    document.getElementById('success-amount').textContent = Storage.formatCurrency(pack.price);
 }
