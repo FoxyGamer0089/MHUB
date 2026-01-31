@@ -9,3 +9,8 @@ const GLOBAL_PACKS = [
     // PASTE YOUR ADMIN GENERATED PACKS HERE
     // Example: { id: "pack_custom_1", name: "Example Pack", price: 100, description: "...", active: true }
 ];
+
+const GLOBAL_TOKENS = [
+    // PASTE YOUR ADMIN GENERATED TOKENS HERE
+    // Example: "RD-A1B2C3", "VIP-USER-1"
+];

@@ -40,10 +40,12 @@ const Storage = {
         const tokens = Storage.getTokens();
         if (tokens.includes(tokenString)) return true;
 
-        // 2. Check Universal Master Tokens (works on ANY device)
-        // You can share these tokens with anyone, anywhere.
-        const MASTER_TOKENS = ["MRD-VIP-2026", "ADMIN-TEST", "GUEST-ACCESS"];
-        return MASTER_TOKENS.includes(tokenString);
+        // 2. Check Global Static Tokens (from database.js)
+        const globalTokens = (typeof GLOBAL_TOKENS !== 'undefined') ? GLOBAL_TOKENS : [];
+        if (globalTokens.includes(tokenString)) return true;
+
+        // 3. Keep Universal Master for emergency testing if needed (Removed for strict admin control request)
+        return false;
     },
 
     // User Session
