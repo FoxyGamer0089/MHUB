@@ -49,16 +49,18 @@
         <p id="error-msg" style="color: red; margin-top: 15px; display: none;">Invalid Token</p>
     </div>
 
-    <script src="js/storage.js"></script>
-    <script>
+    <script type="module">
+        import { Storage } from './js/storage.js';
+
         document.getElementById('enter-btn').onclick = validate;
         document.getElementById('token-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') validate();
         });
 
-        function validate() {
+        async function validate() {
             const token = document.getElementById('token-input').value.trim();
-            if (Storage.validateToken(token)) {
+            const isValid = await Storage.validateToken(token);
+            if (isValid) {
                 Storage.setUserToken(token);
                 window.location.href = 'index.html';
             } else {

@@ -1,10 +1,11 @@
 /**
  * admin.js
- * Admin Panel Logic
+ * Admin Panel Logic (Async / Firestore)
  */
 
+import { Storage } from './storage.js';
+
 // Simple client-side passcode. 
-// INSTRUCTIONS: Change this to your desired secret.
 const ADMIN_PASSCODE = "admin";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -61,27 +62,6 @@ function setupEventListeners() {
     });
 }
 
-// --- PUBLISH LOGIC ---
-// --- PUBLISH LOGIC ---
-window.generatePublishCode = () => {
-    const packs = Storage.getPacks();
-    const tokens = Storage.getTokens();
-    const packsJson = JSON.stringify(packs, null, 4);
-    const tokensJson = JSON.stringify(tokens, null, 4);
-
-    const code = `const GLOBAL_PACKS = ${packsJson};
-
-const GLOBAL_TOKENS = ${tokensJson};`;
-
-    // Copy to clipboard
-    navigator.clipboard.writeText(code).then(() => {
-        alert("✅ Code Copied to Clipboard!\n\nPASTE this into 'js/database.js' and DEPLOY.");
-    }).catch(err => {
-        console.error(err);
-        prompt("Copy this code and replace content in js/database.js:", code);
-    });
-};
-
 // --- TABS ---
 window.switchTab = (tabName) => {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -105,9 +85,11 @@ window.switchTab = (tabName) => {
 };
 
 // --- TOKENS LOGIC ---
-function loadTokens() {
-    const tokens = Storage.getTokens();
+async function loadTokens() {
     const tbody = document.querySelector('#tokens-table tbody');
+    tbody.innerHTML = '<tr><td colspan="2" class="text-center">Loading tokens...</td></tr>';
+
+    const tokens = await Storage.getTokens();
 
     if (tokens.length === 0) {
         tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">No active tokens. Generate one above.</td></tr>';
@@ -124,24 +106,26 @@ function loadTokens() {
     `).join('');
 }
 
-window.generateToken = () => {
+window.generateToken = async () => {
     const token = 'RD-' + Math.random().toString(36).substr(2, 6).toUpperCase() + Math.random().toString(36).substr(2, 2).toUpperCase();
-    Storage.saveToken(token);
+    await Storage.saveToken(token);
     loadTokens();
     alert(`Token Generated: ${token}\nCopy and send this to the user.`);
 };
 
-window.deleteToken = (token) => {
+window.deleteToken = async (token) => {
     if (confirm("Revoke this token? User will lose access.")) {
-        Storage.deleteToken(token);
+        await Storage.deleteToken(token);
         loadTokens();
     }
 };
 
 // --- PACKS LOGIC ---
-function loadPacks() {
-    const packs = Storage.getPacks();
+async function loadPacks() {
     const tbody = document.querySelector('#packs-table tbody');
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center">Loading packs...</td></tr>';
+
+    const packs = await Storage.getPacks();
 
     if (packs.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No packs found. Create one above.</td></tr>';
@@ -165,7 +149,7 @@ function loadPacks() {
     `).join('');
 }
 
-function savePack() {
+async function savePack() {
     const idInput = document.getElementById('pack-id').value; // Empty if new
     const name = document.getElementById('pack-name').value;
     const price = parseFloat(document.getElementById('pack-price').value);
@@ -177,23 +161,31 @@ function savePack() {
         return;
     }
 
+    let createdAt = Date.now();
+    if (idInput) {
+        // Fetch existing to keep createdAt? Or just update. 
+        // For simplicity let's assume update doesn't change createdAt unless we want to fetch first.
+        const existing = await Storage.getPackById(idInput);
+        if (existing) createdAt = existing.createdAt;
+    }
+
     const pack = {
         id: idInput || Storage.generateId(),
         name,
         price,
         description,
         active,
-        createdAt: idInput ? Storage.getPackById(idInput)?.createdAt : Date.now()
+        createdAt
     };
 
-    Storage.savePack(pack);
+    await Storage.savePack(pack);
     resetForm();
     loadPacks();
     alert(idInput ? "Pack updated!" : "Pack created!");
 }
 
-window.editPack = (id) => {
-    const pack = Storage.getPackById(id);
+window.editPack = async (id) => {
+    const pack = await Storage.getPackById(id);
     if (!pack) return;
 
     document.getElementById('pack-id').value = pack.id;
@@ -205,9 +197,9 @@ window.editPack = (id) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-window.deletePack = (id) => {
+window.deletePack = async (id) => {
     if (confirm("Are you sure? This action cannot be undone.")) {
-        Storage.deletePack(id);
+        await Storage.deletePack(id);
         loadPacks();
     }
 }
@@ -218,17 +210,25 @@ window.resetForm = () => {
 };
 
 // --- ORDERS LOGIC ---
-function loadOrders() {
-    const orders = Storage.getOrders().reverse(); // Newest first
+async function loadOrders() {
     const tbody = document.querySelector('#orders-table tbody');
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center">Loading orders...</td></tr>';
+
+    const orders = (await Storage.getOrders()).reverse(); // Newest first
 
     if (orders.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No orders yet.</td></tr>';
         return;
     }
 
+    // Need to resolve pack names async or just show IDs?
+    // Let's load packs once to map names
+    const packs = await Storage.getPacks();
+
     tbody.innerHTML = orders.map(order => {
-        const packName = Storage.getPackById(order.packId)?.name || 'Unknown Pack';
+        const pack = packs.find(p => p.id === order.packId);
+        const packName = pack ? pack.name : 'Unknown Pack';
+
         return `
             <tr>
                 <td style="font-family:monospace; font-size:0.8rem;">${order.orderId}</td>
