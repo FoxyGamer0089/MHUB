@@ -106,10 +106,36 @@ const Storage = {
         }).format(amount);
     },
 
-    // Initialize with empty array if null
+    // Initialize with default data if empty
     init: () => {
         if (!localStorage.getItem(STORAGE_KEYS.PACKS)) {
-            localStorage.setItem(STORAGE_KEYS.PACKS, JSON.stringify([]));
+            const defaultPacks = [
+                {
+                    id: 'pack_default_1',
+                    name: "Starter Access Pack",
+                    description: "Get instant access to the beginner's vault. Includes basic tutorials and entry-level content. Perfect for new members.",
+                    price: 499,
+                    active: true,
+                    createdAt: Date.now()
+                },
+                {
+                    id: 'pack_default_2',
+                    name: "VIP Premium Bundle",
+                    description: "Unlock the full potential. Access all premium resources, hidden guides, and direct support channels. Our most popular choice.",
+                    price: 1499,
+                    active: true,
+                    createdAt: Date.now()
+                },
+                {
+                    id: 'pack_default_3',
+                    name: "Elite Lifetime Access",
+                    description: "One-time payment for lifetime access to everything. No recurring fees. Includes all future updates and exclusive elite-only drops.",
+                    price: 4999,
+                    active: true,
+                    createdAt: Date.now()
+                }
+            ];
+            localStorage.setItem(STORAGE_KEYS.PACKS, JSON.stringify(defaultPacks));
         }
         if (!localStorage.getItem(STORAGE_KEYS.ORDERS)) {
             localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify([]));
