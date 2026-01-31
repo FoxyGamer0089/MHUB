@@ -36,8 +36,14 @@ const Storage = {
     },
 
     validateToken: (tokenString) => {
+        // 1. Check LocalStorage (works on same device)
         const tokens = Storage.getTokens();
-        return tokens.includes(tokenString);
+        if (tokens.includes(tokenString)) return true;
+
+        // 2. Check Universal Master Tokens (works on ANY device)
+        // You can share these tokens with anyone, anywhere.
+        const MASTER_TOKENS = ["MRD-VIP-2026", "ADMIN-TEST", "GUEST-ACCESS"];
+        return MASTER_TOKENS.includes(tokenString);
     },
 
     // User Session
@@ -51,8 +57,26 @@ const Storage = {
 
     // --- PACKS ---
     getPacks: () => {
-        const packs = localStorage.getItem(STORAGE_KEYS.PACKS);
-        return packs ? JSON.parse(packs) : [];
+        // 1. Get Local Admin Packs (Private/Preview)
+        const local = localStorage.getItem(STORAGE_KEYS.PACKS);
+        const localPacks = local ? JSON.parse(local) : [];
+
+        // 2. Get Global Live Packs (from database.js)
+        // GLOBAL_PACKS is defined in js/database.js
+        const globalPacks = (typeof GLOBAL_PACKS !== 'undefined') ? GLOBAL_PACKS : [];
+
+        // 3. Merge? Or prefer Global? 
+        // Strategy: Show ALL unique packs.
+        const allPacks = [...localPacks];
+
+        // Add global packs that aren't already in local (by ID)
+        globalPacks.forEach(gp => {
+            if (!allPacks.find(lp => lp.id === gp.id)) {
+                allPacks.push(gp);
+            }
+        });
+
+        return allPacks;
     },
 
     getActivePacks: () => {
@@ -109,33 +133,7 @@ const Storage = {
     // Initialize with default data if empty
     init: () => {
         if (!localStorage.getItem(STORAGE_KEYS.PACKS)) {
-            const defaultPacks = [
-                {
-                    id: 'pack_default_1',
-                    name: "Starter Access Pack",
-                    description: "Get instant access to the beginner's vault. Includes basic tutorials and entry-level content. Perfect for new members.",
-                    price: 499,
-                    active: true,
-                    createdAt: Date.now()
-                },
-                {
-                    id: 'pack_default_2',
-                    name: "VIP Premium Bundle",
-                    description: "Unlock the full potential. Access all premium resources, hidden guides, and direct support channels. Our most popular choice.",
-                    price: 1499,
-                    active: true,
-                    createdAt: Date.now()
-                },
-                {
-                    id: 'pack_default_3',
-                    name: "Elite Lifetime Access",
-                    description: "One-time payment for lifetime access to everything. No recurring fees. Includes all future updates and exclusive elite-only drops.",
-                    price: 4999,
-                    active: true,
-                    createdAt: Date.now()
-                }
-            ];
-            localStorage.setItem(STORAGE_KEYS.PACKS, JSON.stringify(defaultPacks));
+            localStorage.setItem(STORAGE_KEYS.PACKS, JSON.stringify([]));
         }
         if (!localStorage.getItem(STORAGE_KEYS.ORDERS)) {
             localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify([]));

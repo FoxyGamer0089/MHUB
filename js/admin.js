@@ -61,6 +61,21 @@ function setupEventListeners() {
     });
 }
 
+// --- PUBLISH LOGIC ---
+window.generatePublishCode = () => {
+    const packs = Storage.getPacks();
+    const json = JSON.stringify(packs, null, 4);
+    const code = `const GLOBAL_PACKS = ${json};`;
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(code).then(() => {
+        alert("✅ Code Copied to Clipboard!\n\nPASTE this into 'js/database.js' and DEPLOY.");
+    }).catch(err => {
+        console.error(err);
+        prompt("Copy this code and replace content in js/database.js:", code);
+    });
+};
+
 // --- TABS ---
 window.switchTab = (tabName) => {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
