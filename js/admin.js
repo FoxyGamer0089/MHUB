@@ -212,12 +212,12 @@ window.resetForm = () => {
 // --- ORDERS LOGIC ---
 async function loadOrders() {
     const tbody = document.querySelector('#orders-table tbody');
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center">Loading orders...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Loading orders...</td></tr>';
 
     const orders = (await Storage.getOrders()).reverse(); // Newest first
 
     if (orders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No orders yet.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No orders yet.</td></tr>';
         return;
     }
 
@@ -232,6 +232,7 @@ async function loadOrders() {
         return `
             <tr>
                 <td style="font-family:monospace; font-size:0.8rem;">${order.orderId}</td>
+                <td style="color: var(--accent-color); font-weight: bold;">${escapeHtml(order.df_username || 'N/A')}</td>
                 <td>${escapeHtml(packName)}</td>
                 <td>${Storage.formatCurrency(order.amount)}</td>
                 <td style="font-family:monospace; font-size:0.9rem; color: #00ff88; font-weight:bold;">

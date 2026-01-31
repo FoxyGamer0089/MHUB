@@ -32,8 +32,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Step 2: Submit Button
         document.getElementById('submit-payment-btn').onclick = () => {
+            const dfUsername = document.getElementById('df-username').value.trim();
             const code = document.getElementById('gc-code').value.trim();
-            validateAndSubmit(pack, code);
+            validateAndSubmit(pack, dfUsername, code);
         };
     } catch (e) {
         console.error(e);
@@ -41,7 +42,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-async function validateAndSubmit(pack, code) {
+async function validateAndSubmit(pack, dfUsername, code) {
+    if (!dfUsername) {
+        alert("Please enter your DF USERNAME. It is mandatory.");
+        return;
+    }
+
     if (!code || code.length < 5) { // Simple length check
         alert("Please paste a valid Gift Card Code.");
         return;
@@ -52,6 +58,7 @@ async function validateAndSubmit(pack, code) {
     // Save Order with GC Code
     const order = {
         orderId: orderId,
+        df_username: dfUsername,
         packId: pack.id,
         amount: pack.price,
         payment_method: 'AMAZON_GC',
