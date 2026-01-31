@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack Details - MR DADDY HUB</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo"><a href="index.html">MR DADDY HUB</a></div>
+        </header>
+
+        <main id="pack-content" style="max-width: 800px; margin: 0 auto; display: none;">
+            <a href="index.html" class="text-muted" style="margin-bottom: 20px; display: inline-block;">&larr; Back to
+                Packs</a>
+
+            <div class="card" style="padding: 40px;">
+                <h1 id="pack-name" style="font-size: 2.5rem; color: var(--accent-color);"></h1>
+                <h2 id="pack-price" style="font-size: 2rem; margin-bottom: 20px;"></h2>
+                <hr style="border-color: var(--border-color); margin: 20px 0;">
+                <div id="pack-desc" style="white-space: pre-wrap; margin-bottom: 40px; font-size: 1.1rem; color: #ddd;">
+                </div>
+
+                <button id="buy-btn" class="btn btn-block" style="padding: 20px; font-size: 1.2rem;">BUY NOW
+                    INSTANTLY</button>
+            </div>
+        </main>
+
+        <div id="error-screen" class="text-center" style="display: none; padding-top: 50px;">
+            <h2>Pack Not Found</h2>
+            <p class="text-muted">This pack does not exist or has been removed.</p>
+            <a href="index.html" class="btn btn-secondary mt-4">Go Home</a>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/pack.js"></script>
+</body>
+
+</html>

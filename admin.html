@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - MR DADDY HUB</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Admin specific styles */
+        .admin-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        tr:hover {
+            background-color: var(--card-bg);
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background: #444;
+        }
+
+        /* Login Overlay */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #login-box {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOGIN OVERLAY -->
+    <div id="login-overlay">
+        <div id="login-box">
+            <h2>Admin Access</h2>
+            <div class="form-group">
+                <input type="password" id="admin-passcode" placeholder="Enter Passcode (admin)" />
+            </div>
+            <button class="btn btn-block" id="login-btn">Unlock Panel</button>
+            <p id="login-error" style="color: red; margin-top: 10px; display: none;">Invalid Passcode</p>
+        </div>
+    </div>
+
+    <!-- ADMIN CONTENT -->
+    <div class="container" id="admin-content" style="display: none;">
+        <header>
+            <div class="logo">MR DADDY ADMIN</div>
+            <div>
+                <a href="index.html" class="btn btn-secondary">Open Store</a>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="admin-controls">
+                <button class="tab-btn active" onclick="switchTab('packs')">Manage Packs</button>
+                <button class="tab-btn" onclick="switchTab('orders')">View Orders</button>
+            </div>
+
+            <!-- PACKS TAB -->
+            <div id="tab-packs">
+                <div class="card mb-4">
+                    <h3>Add / Edit Pack</h3>
+                    <form id="pack-form">
+                        <input type="hidden" id="pack-id">
+                        <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                            <div class="form-group">
+                                <label>Pack Name</label>
+                                <input type="text" id="pack-name" required placeholder="Ex: Premium Bundle">
+                            </div>
+                            <div class="form-group">
+                                <label>Price (INR)</label>
+                                <input type="number" id="pack-price" required placeholder="999">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="pack-desc" rows="4" required
+                                placeholder="Details about this pack..."></textarea>
+                        </div>
+                        <div class="form-group flex items-center">
+                            <input type="checkbox" id="pack-active" style="width: auto; margin-right: 10px;">
+                            <label for="pack-active" style="margin-bottom: 0;">Active (Visible on Home)</label>
+                        </div>
+                        <button type="submit" class="btn">Save Pack</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancel</button>
+                    </form>
+                </div>
+
+                <h3>Existing Packs</h3>
+                <div class="table-container">
+                    <table id="packs-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loaded via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ORDERS TAB -->
+            <div id="tab-orders" style="display: none;">
+                <h3>Recent Orders</h3>
+                <div class="table-container">
+                    <table id="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Pack</th>
+                                <th>Amount</th>
+                                <th>Payment ID</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loaded via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
